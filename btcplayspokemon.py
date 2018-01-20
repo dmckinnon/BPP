@@ -27,13 +27,13 @@ lut[] = {[], []}
 lut[0] = {[[], []], [[], []]}
 lut[1] = {[[], []], [[], []]}
 lut[0][0][0] = 'a'
-lut[0][0][1] = 
-lut[0][1][0] = 
-lut[0][1][1] = 
-lut[1][0][0] = 
-lut[1][0][1] = 
-lut[1][1][0] = 
-lut[1][1][1] = 
+lut[0][0][1] = 's'
+lut[0][1][0] = 'd'
+lut[0][1][1] = 'w'
+lut[1][0][0] = ' '
+lut[1][0][1] = 'x'
+lut[1][1][0] = 'y'
+lut[1][1][1] = 't'
 
 
 # Query prices, make keypresses
@@ -49,22 +49,15 @@ while(True):
         # What would be better is to read the http message and check the allowed rate
         # but eh for now
         time.sleep(60)
-    
+    priceUpDown = curPrice >= prevPrice? 1 : 0
 
     prevGrad = curGrad
     curGrad = curPrice - prevPrice
+    gradUpDown = curGrad >= prevGrad? 1 : 0
 
     prevConc = curConc
-    curConc =- curGrad - prevGrad 
+    curConc = curGrad - prevGrad
+    concUpDown = curConc >= prevConc? 1 : 0
     
     # Make keypress
-
-    # Print stats
-    print ("Current price: " + str(curPrice))
-    dir = "up"
-    if (curPrice <= prevPrice):
-        dir = "down"
-        keyboard.tap_key('d')
-    else:
-        keyboard.tap_key('u')
-    print ("Price has gone " + dir)
+    keyboard.tap_key(lut[priceUpDown][gradUpDown][concUpDown])
