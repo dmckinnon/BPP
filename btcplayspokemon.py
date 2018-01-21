@@ -7,6 +7,8 @@ from pykeyboard import PyKeyboard
 keyboard = PyKeyboard()
 
 # Previous and current value
+prevPrevPrevPrice = 0
+prevPrevPrice = 0
 prevPrice = 0
 curPrice = 0
 priceUpDown = 0
@@ -29,18 +31,20 @@ lut[1] = [[[], []], [[], []]]
 lut[0][0][0] = 'r'
 lut[0][0][1] = 'b'
 lut[0][1][0] = 't'
-lut[0][1][1] = 'l'
+lut[0][1][1] = 'a'
 lut[1][0][0] = 'u'
 lut[1][0][1] = 'd'
-lut[1][1][0] = 'l'
-lut[1][1][1] = 'a'
+lut[1][1][0] = 'e'
+lut[1][1][1] = 'l'
 
 
 # Query prices, make keypresses
 while(True):
-    time.sleep(2)
+    time.sleep(4)
 
     # compute new values
+    prevPrevPrevPrice = prevPrevPrice
+    prevPrevPrice = prevPrice
     prevPrice = curPrice
     try:
         curPrice = Bitfinex().get_current_price()
@@ -57,21 +61,22 @@ while(True):
 
     prevGrad = curGrad
     curGrad = curPrice - prevPrice
-    if curGrad >= prevGrad:
+    if prevPrice >= prevPrevPrice:
         gradUpDown = 1
     else:
         gradUpDown = 0
 
     prevConc = curConc
     curConc = curGrad - prevGrad
-    if curConc >= prevConc:
+    if prevPrevPrice >= prevPrevPrevPrice:
         concUpDown = 1
     else:
         concUpDown = 0
 
     
     # Make keypress
-    keyboard.press_key(lut[priceUpDown][gradUpDown][concUpDown])
+    keyboard.press_key(lut[concUpDown][gradUpDown][priceUpDown])
     time.sleep(0.5)
-    keyboard.release_key(lut[priceUpDown][gradUpDown][concUpDown])
-    print("Current price: " + str(curPrice) + " - key: " + str(lut[priceUpDown][gradUpDown][concUpDown]))
+    keyboard.release_key(lut[concUpDown][gradUpDown][priceUpDown])
+    print("Current price: " + str(curPrice) + " - key: " + str(lut[concUpDown][gradUpDown][priceUpDown]))
+
