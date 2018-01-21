@@ -23,17 +23,17 @@ concUpDown = 0
 
 # Lookup table
 # actual keypresses depend on the emulator
-lut[] = {[], []}
-lut[0] = {[[], []], [[], []]}
-lut[1] = {[[], []], [[], []]}
-lut[0][0][0] = 'a'
-lut[0][0][1] = 's'
-lut[0][1][0] = 'd'
-lut[0][1][1] = 'w'
-lut[1][0][0] = ' '
-lut[1][0][1] = 'x'
-lut[1][1][0] = 'y'
-lut[1][1][1] = 't'
+lut = [[], []]
+lut[0] = [[[], []], [[], []]]
+lut[1] = [[[], []], [[], []]]
+lut[0][0][0] = 'r'
+lut[0][0][1] = 'b'
+lut[0][1][0] = 't'
+lut[0][1][1] = 'l'
+lut[1][0][0] = 'u'
+lut[1][0][1] = 'd'
+lut[1][1][0] = 'l'
+lut[1][1][1] = 'a'
 
 
 # Query prices, make keypresses
@@ -49,15 +49,29 @@ while(True):
         # What would be better is to read the http message and check the allowed rate
         # but eh for now
         time.sleep(60)
-    priceUpDown = curPrice >= prevPrice? 1 : 0
+
+    if curPrice >= prevPrice:
+        priceUpDown = 1
+    else:
+        priceUpDown = 0
 
     prevGrad = curGrad
     curGrad = curPrice - prevPrice
-    gradUpDown = curGrad >= prevGrad? 1 : 0
+    if curGrad >= prevGrad:
+        gradUpDown = 1
+    else:
+        gradUpDown = 0
 
     prevConc = curConc
     curConc = curGrad - prevGrad
-    concUpDown = curConc >= prevConc? 1 : 0
+    if curConc >= prevConc:
+        concUpDown = 1
+    else:
+        concUpDown = 0
+
     
     # Make keypress
-    keyboard.tap_key(lut[priceUpDown][gradUpDown][concUpDown])
+    keyboard.press_key(lut[priceUpDown][gradUpDown][concUpDown])
+    time.sleep(0.5)
+    keyboard.release_key(lut[priceUpDown][gradUpDown][concUpDown])
+    print("Current price: " + str(curPrice) + " - key: " + str(lut[priceUpDown][gradUpDown][concUpDown]))
