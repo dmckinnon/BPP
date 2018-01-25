@@ -1,10 +1,18 @@
 #!/usr/bin/python
 from exchanges.bitfinex import Bitfinex
 import time
-from pykeyboard import PyKeyboard
+#from pykeyboard import PyKeyboard
+import pygame
 
 # initialise keyboard input
-keyboard = PyKeyboard()
+#keyboard = PyKeyboard()
+
+# initialise pygame for the graph
+WIDTH = 640
+HEIGHT = 480
+pygame.init()
+screen = pygame.display.set_mode((WIDTH,HEIGHT)) # change screen size
+
 
 # Previous and current value
 prevPrevPrevPrice = 0
@@ -39,8 +47,9 @@ lut[1][1][1] = 'l'
 
 
 # Query prices, make keypresses
-while(True):
-    time.sleep(4)
+done = False
+while not done:
+    time.sleep(1)
 
     # compute new values
     prevPrevPrevPrice = prevPrevPrice
@@ -75,8 +84,24 @@ while(True):
 
     
     # Make keypress
-    keyboard.press_key(lut[concUpDown][gradUpDown][priceUpDown])
-    time.sleep(0.5)
-    keyboard.release_key(lut[concUpDown][gradUpDown][priceUpDown])
+    #keyboard.press_key(lut[concUpDown][gradUpDown][priceUpDown])
+    #time.sleep(0.5)
+    #keyboard.release_key(lut[concUpDown][gradUpDown][priceUpDown])
     print("Current price: " + str(curPrice) + " - key: " + str(lut[concUpDown][gradUpDown][priceUpDown]))
 
+    # Do pygame display
+    screen.fill(0x000000)
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            done = True
+    # scale the lines to fit in the screen
+    point1 = (WIDTH-5, HEIGHT/2)
+    point2 = (0.75*WIDTH, float(curPrice-prevPrice)+HEIGHT/2)
+    point3 = (0.5*WIDTH, float(prevPrice-prevPrevPrice)+HEIGHT/2)
+    point4 = (0.25*WIDTH, float(prevPrevPrice-prevPrevPrevPrice)+HEIGHT/2)
+    point5 = (5, float(prevPrevPrice-prevPrevPrevPrice)+HEIGHT/2)
+    points = [point1, point2, point3, point4, point5]
+    pygame.draw.lines(screen, 0x00ff00, False, points, 1)
+
+    pygame.display.update()
+   # pygame.display.flip()
