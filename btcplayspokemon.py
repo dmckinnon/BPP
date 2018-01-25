@@ -38,14 +38,21 @@ lut[1][1][0] = 'e'
 lut[1][1][1] = 'l'
 
 
+iterations = 0
+
+thingsAreOk = True
+
 # Query prices, make keypresses
 while(True):
-    time.sleep(4)
+    time.sleep(1)
 
     # compute new values
-    prevPrevPrevPrice = prevPrevPrice
-    prevPrevPrice = prevPrice
+    if thingsAreOk:
+        prevPrevPrevPrice = prevPrevPrice
+        prevPrevPrice = prevPrice
+    
     prevPrice = curPrice
+
     try:
         curPrice = Bitfinex().get_current_price()
     except Exception as e:
@@ -54,29 +61,35 @@ while(True):
         # but eh for now
         time.sleep(60)
 
+    if curPrice == prevPrice:
+        thingsAreOk = False
+        continue
+    else:
+        thingsAreOk = True
+
+
     if curPrice >= prevPrice:
         priceUpDown = 1
     else:
         priceUpDown = 0
 
-    prevGrad = curGrad
-    curGrad = curPrice - prevPrice
     if prevPrice >= prevPrevPrice:
         gradUpDown = 1
     else:
         gradUpDown = 0
 
-    prevConc = curConc
-    curConc = curGrad - prevGrad
     if prevPrevPrice >= prevPrevPrevPrice:
         concUpDown = 1
     else:
         concUpDown = 0
 
+
+    iterations += 1
     
     # Make keypress
     keyboard.press_key(lut[concUpDown][gradUpDown][priceUpDown])
     time.sleep(0.5)
     keyboard.release_key(lut[concUpDown][gradUpDown][priceUpDown])
+    #lut[concUpDown][gradUpDown][priceUpDown] += 1
     print("Current price: " + str(curPrice) + " - key: " + str(lut[concUpDown][gradUpDown][priceUpDown]))
 
